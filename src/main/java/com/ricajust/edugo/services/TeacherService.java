@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ricajust.edugo.dtos.TeacherDTO;
+import com.ricajust.edugo.models.Discipline;
 import com.ricajust.edugo.models.Teacher;
 import com.ricajust.edugo.repositories.TeacherRepository;
 
@@ -19,18 +21,33 @@ import lombok.RequiredArgsConstructor;
 public class TeacherService {
 
 	@Autowired
-	private TeacherRepository repository;
+	private final TeacherRepository teacherRepository;
 
-	public List<Teacher> getAllTeachers(){
-		return repository.findAll();
+	public List<TeacherDTO> getAllTeachers() {
+		return teacherRepository.findAll().stream().map(teacher -> new TeacherDTO(
+			teacher.getId(),
+			teacher.getName(),
+			teacher.getEmail(),
+			teacher.getHiringDate(),
+			teacher.getDisciplines().stream().map(Discipline::getId).toList()
+		)).toList();
 	}
 
-	public Teacher getTeacherById(UUID id) {
-		Optional<Teacher> teacher = repository.findById(id);
-		return teacher.orElseThrow(() -> new RuntimeException("Professor não localizado com o id: " + id));
+	public Optional<TeacherDTO> getTeacherById(UUID id) {
+		return teacherRepository.findById(id).map(teacher -> new TeacherDTO(
+			teacher.getId(),
+			teacher.getName(),
+			teacher.getEmail(),
+			teacher.getHiringDate(),
+			teacher.getDisciplines().stream().map(Discipline::getId).toList()
+		));
 	}
 
-	public Teacher saveTeacher(Teacher teacher){
-		return repository.save(teacher);
+	public Teacher saveTeacher(Teacher teacher) {
+		return teacherRepository.save(teacher);
+	}
+
+	public void deleteTeacherById(UUID id) {
+		teacherRepository.deleteById(id);
 	}
 }

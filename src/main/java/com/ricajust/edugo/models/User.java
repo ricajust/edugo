@@ -6,8 +6,10 @@ import java.util.*;
 
 // Base User class
 @MappedSuperclass
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

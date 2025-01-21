@@ -1,21 +1,20 @@
 package com.ricajust.edugo.controllers;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.ricajust.edugo.dtos.TeacherDTO;
 import com.ricajust.edugo.models.Teacher;
 import com.ricajust.edugo.services.TeacherService;
 
@@ -27,27 +26,42 @@ import lombok.RequiredArgsConstructor;
 public class TeacherController {
 
 	@Autowired
-	private TeacherService service;
-	
+	private final TeacherService teacherService;
+
 	@GetMapping
-	public ResponseEntity<List<Teacher>> getAllTeachers(){
-		List<Teacher> teachers = service.getAllTeachers();
-		if (teachers.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList());
-		}
-		return ResponseEntity.ok().body(teachers);
+	public ResponseEntity<List<TeacherDTO>> getAllTeachers() {
+		List<TeacherDTO> teachers = teacherService.getAllTeachers();
+		return ResponseEntity.ok(teachers);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Teacher> getTeacherById(@PathVariable UUID id) {
-		Teacher teacher = service.getTeacherById(id);
-		return ResponseEntity.ok().body(teacher);
+	public ResponseEntity<TeacherDTO> getTeacherById(@PathVariable UUID id) {
+		return teacherService.getTeacherById(id)
+				.map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
 	}
 
 	@PostMapping
-	public ResponseEntity<Teacher> saveTeacher(@RequestBody Teacher teacher){
-		teacher = service.saveTeacher(teacher);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(teacher.getId()).toUri();
-		// Retorna o status 201 com o header "Location"
-		return ResponseEntity.created(uri).build();	}
+	public ResponseEntity<Teacher> createTeacher(@RequestBody Teacher teacher) {
+		Teacher savedTeacher = teacherService.saveTeacher(teacher);
+		return ResponseEntity.status(201).body(savedTeacher);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Teacher> updateTeacher(@PathVariable UUID id, @RequestBody Teacher updatedTeacher) {
+		return teacherService.getTeacherById(id).map(existingTeacher -> {
+			updatedTeacher.setId(existingTeacher.getId());
+			Teacher savedTeacher = teacherService.saveTeacher(updatedTeacher);
+			return ResponseEntity.ok(savedTeacher);
+		}).orElse(ResponseEntity.notFound().build());
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteTeacher(@PathVariable UUID id) {
+		if (teacherService.getTeacherById(id).isPresent()) {
+			teacherService.deleteTeacherById(id);
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
 }

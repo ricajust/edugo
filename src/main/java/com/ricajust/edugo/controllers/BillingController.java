@@ -1,21 +1,19 @@
 package com.ricajust.edugo.controllers;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.ricajust.edugo.dtos.BillingDTO;
 import com.ricajust.edugo.models.Billing;
 import com.ricajust.edugo.services.BillingService;
 
@@ -27,28 +25,43 @@ import lombok.RequiredArgsConstructor;
 public class BillingController {
 
 	@Autowired
-	private BillingService service;
-	
+	private final BillingService billingService;
+
 	@GetMapping
-	public ResponseEntity<List<Billing>> getAllBillings() {
-		List<Billing> billings = service.getAllBillings();
-		if (billings.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList());
-		}
-		return ResponseEntity.ok().body(billings);
+	public ResponseEntity<List<BillingDTO>> getAllBillings() {
+		List<BillingDTO> billings = billingService.getAllBillings();
+		return ResponseEntity.ok(billings);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Billing> getBillingById(@PathVariable Long id) {
-		Billing billing = service.getBillingById(id);
-		return ResponseEntity.ok().body(billing);
+	public ResponseEntity<BillingDTO> getBillingById(@PathVariable Long id) {
+		return billingService.getBillingById(id)
+				.map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
 	}
 
 	@PostMapping
-	public ResponseEntity<Billing> saveBilling(@RequestBody Billing billing) {
-		billing = service.saveBilling(billing);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(billing.getId()).toUri();
-		// Retorna o status 201 com o header "Location"
-		return ResponseEntity.created(uri).build();
+	public ResponseEntity<BillingDTO> createBilling(@RequestBody BillingDTO billing) {
+		BillingDTO savedBilling = billingService.createBilling(billing);
+		return ResponseEntity.status(201).body(savedBilling);
 	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Billing> updateBilling(@PathVariable Long id, @RequestBody Billing updatedBilling) {
+		return billingService.getBillingById(id).map(existingBilling -> {
+			updatedBilling.setId(existingBilling.getId());
+			Billing savedBilling = billingService.saveBilling(updatedBilling);
+			return ResponseEntity.ok(savedBilling);
+		}).orElse(ResponseEntity.notFound().build());
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteBilling(@PathVariable Long id) {
+		if (billingService.getBillingById(id).isPresent()) {
+			billingService.deleteBillingById(id);
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+
 }

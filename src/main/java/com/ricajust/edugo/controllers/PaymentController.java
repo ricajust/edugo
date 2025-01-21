@@ -1,20 +1,19 @@
 package com.ricajust.edugo.controllers;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.ricajust.edugo.dtos.PaymentDTO;
 import com.ricajust.edugo.models.Payment;
 import com.ricajust.edugo.services.PaymentService;
 
@@ -24,28 +23,43 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/payments")
 public class PaymentController {
-	private PaymentService service;
+	@Autowired
+	private final PaymentService paymentService;
 
 	@GetMapping
-	public ResponseEntity<List<Payment>> getAllPayments() {
-		List<Payment> payments = service.getAllPayments();
-		if (payments.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList());
-		}
-		return ResponseEntity.ok().body(payments);
+	public ResponseEntity<List<PaymentDTO>> getAllPayments() {
+		List<PaymentDTO> payments = paymentService.getAllPayments();
+		return ResponseEntity.ok(payments);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Payment> getPaymentById(@PathVariable Long id) {
-		Payment payment = service.getPaymentById(id);
-		return ResponseEntity.ok().body(payment);
+	public ResponseEntity<PaymentDTO> getPaymentById(@PathVariable Long id) {
+		return paymentService.getPaymentById(id)
+				.map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
 	}
-	
+
 	@PostMapping
-	public ResponseEntity<Payment> savePayment(@RequestBody Payment payment) {
-		payment = service.savePayment(payment);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(payment.getId()).toUri();
-		// Retorna o status 201 com o header "Location"
-		return ResponseEntity.created(uri).build();
+	public ResponseEntity<PaymentDTO> createPayment(@RequestBody PaymentDTO payment) {
+		PaymentDTO savedPayment = paymentService.createPayment(payment);
+		return ResponseEntity.status(201).body(savedPayment);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Payment> updatePayment(@PathVariable Long id, @RequestBody Payment updatedPayment) {
+		return paymentService.getPaymentById(id).map(existingPayment -> {
+			updatedPayment.setId(existingPayment.getId());
+			Payment savedPayment = paymentService.savePayment(updatedPayment);
+			return ResponseEntity.ok(savedPayment);
+		}).orElse(ResponseEntity.notFound().build());
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
+		if (paymentService.getPaymentById(id).isPresent()) {
+			paymentService.deletePaymentById(id);
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
 	}
 }
