@@ -1,6 +1,7 @@
 package com.ricajust.edugo.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ricajust.edugo.dtos.GradeByStudentDTO;
 import com.ricajust.edugo.dtos.GradeDTO;
+import com.ricajust.edugo.models.Grade;
 import com.ricajust.edugo.services.GradeService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,17 @@ public class GradeController {
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
 	}
+	
+
+	 // Endpoint para buscar todas as notas de um aluno
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<List<GradeByStudentDTO>> getGradesByStudentId(@PathVariable UUID studentId) {
+        List<GradeByStudentDTO> grades = gradeService.getGradesByStudentId(studentId);
+        if (grades.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(grades);
+    }
 
 	@PostMapping
 	public ResponseEntity<GradeDTO> createGrade(@RequestBody GradeDTO gradeDTO) {

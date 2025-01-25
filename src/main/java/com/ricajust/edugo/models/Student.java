@@ -35,6 +35,7 @@ public class Student extends User {
 	private List<Discipline> disciplines = new ArrayList<>();
 
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore // Ignorar a lista de grades na serialização
 	private List<Grade> grades = new ArrayList<>();
 
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -33,6 +33,12 @@ public class DisciplineController {
 		return ResponseEntity.ok(disciplines);
 	}
 
+	// @GetMapping()
+	// public ResponseEntity<List<DisciplineDTO>> getAllDisciplineById(List<Long> ids) {
+	// 	List<DisciplineDTO> disciplines = disciplineService.getAllDisciplinesById(ids);
+	// 	return ResponseEntity.ok(disciplines);
+	// }
+
 	@GetMapping("/{id}")
 	public ResponseEntity<DisciplineDTO> getDisciplineById(@PathVariable Long id) {
 		return disciplineService.getDisciplineById(id)

@@ -1,5 +1,7 @@
 package com.ricajust.edugo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +27,7 @@ public class Grade {
 
 	@ManyToOne
 	@JoinColumn(name = "student_id")
+	@JsonIgnore // Evitar serialização do estudante dentro de Grade
 	private Student student;
 
 	@ManyToOne

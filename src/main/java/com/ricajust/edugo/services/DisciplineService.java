@@ -38,6 +38,17 @@ public class DisciplineService {
 		)).toList();
 	}
 
+	public List<DisciplineDTO> getAllDisciplinesById(List<Long> disciplineIds) {
+		return disciplineRepository.findAllById(disciplineIds).stream().map(discipline -> new DisciplineDTO(
+			discipline.getId(),
+			discipline.getName(),
+			discipline.getDescription(),
+			discipline.getPrice(),
+			discipline.getTeacher().getId(),
+			discipline.getStudents().stream().map(Student::getId).toList()
+		)).toList();
+    }
+
 	public Optional<DisciplineDTO> getDisciplineById(Long id) {
 		return disciplineRepository.findById(id).map(discipline -> new DisciplineDTO(
 			discipline.getId(),

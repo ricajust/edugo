@@ -1,12 +1,17 @@
 package com.ricajust.edugo.services;
 
+import java.security.PublicKey;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ricajust.edugo.dtos.GradeByStudentDTO;
 import com.ricajust.edugo.dtos.GradeDTO;
+import com.ricajust.edugo.dtos.StudentDTO;
 import com.ricajust.edugo.models.Discipline;
 import com.ricajust.edugo.models.Grade;
 import com.ricajust.edugo.models.Student;
@@ -45,6 +50,38 @@ public class GradeService {
 			grade.getDiscipline().getId()
 		));
 	}
+
+	public List<GradeByStudentDTO> getGradesByStudentId(UUID studentId) {
+		return gradeRepository.findByStudentId(studentId).stream()
+			.map(grade -> {
+				GradeByStudentDTO.DisciplineDTO disciplineDTO = null;
+				if (grade.getDiscipline() != null) {
+					disciplineDTO = new GradeByStudentDTO.DisciplineDTO(
+						grade.getDiscipline().getId(), 
+						grade.getDiscipline().getName()
+					);
+				}
+				return new GradeByStudentDTO(
+					grade.getId(),
+					grade.getValue(),
+					disciplineDTO
+				);
+			})
+			.collect(Collectors.toList());
+	}
+
+	// public List<GradeByStudentDTO> getGradesByStudentId(UUID studentId) {
+    //     return gradeRepository.findByStudentId(studentId).stream()
+	// 	.map(grade -> new GradeByStudentDTO(
+	// 		grade.getId(),
+	// 		grade.getValue(),
+	// 		new GradeByStudentDTO.DisciplineDTO()
+	// 	)).collect(Collectors.toList());
+    // }
+
+	// public List<Grade> getGradesByStudentId(UUID studentId) {
+    //     return gradeRepository.findByStudentId(studentId);
+    // }
 
 	public Grade saveGrade(Grade grade) {
 		return gradeRepository.save(grade);
@@ -109,4 +146,5 @@ public class GradeService {
 			updatedGrade.getDiscipline().getId()
 		);
 	}
+
 }

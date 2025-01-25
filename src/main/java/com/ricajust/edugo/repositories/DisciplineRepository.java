@@ -7,5 +7,4 @@ import com.ricajust.edugo.models.Discipline;
 
 @Repository
 public interface DisciplineRepository extends JpaRepository<Discipline, Long>{
-
 }
