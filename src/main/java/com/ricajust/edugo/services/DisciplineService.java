@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.ricajust.edugo.dtos.DisciplineDTO;
 import com.ricajust.edugo.models.Discipline;
-import com.ricajust.edugo.models.Student;
 import com.ricajust.edugo.models.Teacher;
 import com.ricajust.edugo.repositories.DisciplineRepository;
 import com.ricajust.edugo.repositories.TeacherRepository;
@@ -34,7 +33,9 @@ public class DisciplineService {
 			discipline.getDescription(),
 			discipline.getPrice(),
 			discipline.getTeacher().getId(),
-			discipline.getStudents().stream().map(Student::getId).toList()
+			discipline.getStudentDisciplines().stream()
+				.map(sd -> sd.getStudent().getId())
+				.toList()
 		)).toList();
 	}
 
@@ -45,7 +46,9 @@ public class DisciplineService {
 			discipline.getDescription(),
 			discipline.getPrice(),
 			discipline.getTeacher().getId(),
-			discipline.getStudents().stream().map(Student::getId).toList()
+			discipline.getStudentDisciplines().stream()
+				.map(sd -> sd.getStudent().getId())
+				.toList()
 		)).toList();
     }
 
@@ -56,7 +59,9 @@ public class DisciplineService {
 			discipline.getDescription(),
 			discipline.getPrice(),
 			discipline.getTeacher().getId(),
-			discipline.getStudents().stream().map(Student::getId).toList()
+			discipline.getStudentDisciplines().stream()
+				.map(sd -> sd.getStudent().getId())
+				.toList()
 		));
 	}
 
@@ -84,7 +89,9 @@ public class DisciplineService {
 			savedDiscipline.getDescription(),
 			savedDiscipline.getPrice(),
 			savedDiscipline.getTeacher().getId(),
-			savedDiscipline.getStudents().stream().map(Student::getId).toList()
+			savedDiscipline.getStudentDisciplines().stream()
+				.map(sd -> sd.getStudent().getId())
+				.toList()
 		);
 	}
 

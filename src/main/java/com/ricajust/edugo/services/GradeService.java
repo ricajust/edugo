@@ -1,6 +1,5 @@
 package com.ricajust.edugo.services;
 
-import java.security.PublicKey;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.ricajust.edugo.dtos.GradeByStudentDTO;
 import com.ricajust.edugo.dtos.GradeDTO;
-import com.ricajust.edugo.dtos.StudentDTO;
 import com.ricajust.edugo.models.Discipline;
 import com.ricajust.edugo.models.Grade;
 import com.ricajust.edugo.models.Student;

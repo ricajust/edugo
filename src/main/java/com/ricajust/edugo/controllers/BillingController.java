@@ -1,6 +1,7 @@
 package com.ricajust.edugo.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ricajust.edugo.dtos.BillingByStudentDTO;
 import com.ricajust.edugo.dtos.BillingDTO;
 import com.ricajust.edugo.models.Billing;
 import com.ricajust.edugo.services.BillingService;
@@ -38,6 +40,15 @@ public class BillingController {
 		return billingService.getBillingById(id)
 				.map(ResponseEntity::ok)
 				.orElse(ResponseEntity.notFound().build());
+	}
+
+	@GetMapping("/student/{studentId}")
+	public ResponseEntity<List<BillingByStudentDTO>> getBillingByStudentId(@PathVariable UUID studentId) {
+		List<BillingByStudentDTO> billings = billingService.getBillingByStudentId(studentId);
+		if(billings.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(billings);
 	}
 
 	@PostMapping

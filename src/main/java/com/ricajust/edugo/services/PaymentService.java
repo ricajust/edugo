@@ -6,11 +6,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ricajust.edugo.dtos.BillingDTO;
 import com.ricajust.edugo.dtos.PaymentDTO;
 import com.ricajust.edugo.models.Billing;
 import com.ricajust.edugo.models.Payment;
-import com.ricajust.edugo.models.Student;
 import com.ricajust.edugo.repositories.BillingRepository;
 import com.ricajust.edugo.repositories.PaymentRepository;
 

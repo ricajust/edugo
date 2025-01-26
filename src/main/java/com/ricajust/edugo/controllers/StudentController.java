@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.ricajust.edugo.dtos.StudentDTO;
-import com.ricajust.edugo.models.Student;
 import com.ricajust.edugo.services.StudentService;
 
 import lombok.RequiredArgsConstructor;

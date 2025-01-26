@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ricajust.edugo.dtos.StudentDTO;
-import com.ricajust.edugo.models.Discipline;
 import com.ricajust.edugo.models.Student;
-import com.ricajust.edugo.repositories.DisciplineRepository;
 import com.ricajust.edugo.repositories.StudentRepository;
 
 import jakarta.transaction.Transactional;
@@ -24,9 +22,6 @@ public class StudentService {
 
 	@Autowired
 	private final StudentRepository studentRepository;
-
-	@Autowired
-	private final DisciplineRepository disciplineRepository;
 
 	public List<StudentDTO> getAllStudents() {
 		return studentRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
@@ -47,20 +42,20 @@ public class StudentService {
 	}
 
 	private StudentDTO convertToDTO(Student student) {
-		List<Long> disciplineIds = student.getDisciplines().stream()
-				.map(Discipline::getId)
-				.collect(Collectors.toList());
-		return new StudentDTO(student.getId(), student.getName(), student.getEmail(), student.getEnrollmentDate(), disciplineIds);
+		List<Long> disciplineIds = student.getStudentDisciplines().stream()
+                .map(sd -> sd.getDiscipline().getId())
+                .collect(Collectors.toList());
+        return new StudentDTO(student.getId(), student.getName(), student.getEmail(), student.getEnrollmentDate(), disciplineIds);
 	}
 
 	private Student convertToEntity(StudentDTO studentDTO) {
-		List<Discipline> disciplines = disciplineRepository.findAllById(studentDTO.getDisciplineIds());
 		Student student = new Student();
-		student.setId(studentDTO.getId());
-		student.setName(studentDTO.getName());
-		student.setEmail(studentDTO.getEmail());
-		student.setEnrollmentDate(studentDTO.getEnrollmentDate());
-		student.setDisciplines(disciplines);
-		return student;
+        student.setId(studentDTO.getId());
+        student.setName(studentDTO.getName());
+        student.setEmail(studentDTO.getEmail());
+        student.setEnrollmentDate(studentDTO.getEnrollmentDate());
+
+        // Não manipula disciplinas diretamente aqui (relacionamento via StudentDiscipline)
+        return student;
 	}
 }

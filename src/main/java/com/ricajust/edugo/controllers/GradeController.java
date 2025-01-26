@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ricajust.edugo.dtos.GradeByStudentDTO;
 import com.ricajust.edugo.dtos.GradeDTO;
-import com.ricajust.edugo.models.Grade;
 import com.ricajust.edugo.services.GradeService;
 
 import lombok.RequiredArgsConstructor;

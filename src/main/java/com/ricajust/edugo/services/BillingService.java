@@ -2,10 +2,13 @@ package com.ricajust.edugo.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ricajust.edugo.dtos.BillingByStudentDTO;
 import com.ricajust.edugo.dtos.BillingDTO;
 import com.ricajust.edugo.models.Billing;
 import com.ricajust.edugo.models.Payment;
@@ -49,6 +52,27 @@ public class BillingService {
 			billing.getStudent().getId(),
 			billing.getPayments().stream().map(Payment::getId).toList()
 		));
+	}
+
+	public List<BillingByStudentDTO> getBillingByStudentId(UUID studentId) {
+		return billingRepository.findByStudentId(studentId).stream()
+			.map(billing -> {
+				BillingByStudentDTO.PaymentDTO paymentDTOs = null;
+				if(billing.getPayments() != null) {
+					paymentDTOs = new BillingByStudentDTO.PaymentDTO(
+						billing.getId(),
+						billing.getDueDate(),
+						billing.getAmount()
+					);
+				}
+				return new BillingByStudentDTO(
+					billing.getId(),
+					billing.getAmount(),
+					billing.getDueDate(),
+					billing.getStatus(),
+					paymentDTOs
+				);
+			}).collect(Collectors.toList());
 	}
 
 	public Billing saveBilling(Billing billing) {
