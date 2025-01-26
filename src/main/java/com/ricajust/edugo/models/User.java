@@ -4,23 +4,23 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 
-// Base User class
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED) // Ou SINGLE_TABLE, dependendo do que você quer
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class User {
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private UUID id;
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-	private String name;
+    private String name;
 
-	@Column(unique = true)
-	private String email;
+    @Column(unique = true)
+    private String email;
 
-	private String password;
+    private String password;
 
-	private String role;
+    private String role;
 }
