@@ -7,5 +7,5 @@ import com.ricajust.edugo.models.Payment;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long>{
-
+	Payment findByBillingId(Long billingId);
 }

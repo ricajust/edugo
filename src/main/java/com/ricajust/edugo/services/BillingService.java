@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 
 import com.ricajust.edugo.dtos.BillingByStudentDTO;
 import com.ricajust.edugo.dtos.BillingDTO;
+import com.ricajust.edugo.dtos.BillingByStudentDTO.PaymentDTO;
 import com.ricajust.edugo.models.Billing;
 import com.ricajust.edugo.models.Payment;
 import com.ricajust.edugo.models.Student;
 import com.ricajust.edugo.repositories.BillingRepository;
+import com.ricajust.edugo.repositories.PaymentRepository;
 import com.ricajust.edugo.repositories.StudentRepository;
 
 import jakarta.transaction.Transactional;
@@ -28,6 +30,8 @@ public class BillingService {
 	private final BillingRepository billingRepository;
 	@Autowired
 	private final StudentRepository studentRepository;
+	@Autowired
+    private PaymentRepository paymentRepository;
 
 	public List<BillingDTO> getAllBillings() {
 		return billingRepository.findAll().stream()
@@ -55,25 +59,50 @@ public class BillingService {
 	}
 
 	public List<BillingByStudentDTO> getBillingByStudentId(UUID studentId) {
-		return billingRepository.findByStudentId(studentId).stream()
-			.map(billing -> {
-				BillingByStudentDTO.PaymentDTO paymentDTOs = null;
-				if(billing.getPayments() != null) {
-					paymentDTOs = new BillingByStudentDTO.PaymentDTO(
-						billing.getId(),
-						billing.getDueDate(),
-						billing.getAmount()
-					);
-				}
-				return new BillingByStudentDTO(
-					billing.getId(),
-					billing.getAmount(),
-					billing.getDueDate(),
-					billing.getStatus(),
-					paymentDTOs
-				);
-			}).collect(Collectors.toList());
+		// Busca todas as faturas do aluno
+		List<Billing> billings = billingRepository.findByStudentId(studentId);
+
+		return billings.stream().map(billing -> {
+			// Busca o pagamento relacionado à fatura
+			Payment payment = paymentRepository.findByBillingId(billing.getId());
+
+			// Atualiza o status da fatura baseado na existência do pagamento
+			if (payment != null) {
+				billing.setStatus("Paid");
+				billingRepository.save(billing); // Salva a atualização no banco
+			}
+
+			// Monta o DTO
+			return new BillingByStudentDTO(
+				billing.getId(),
+				billing.getAmount(),
+				billing.getDueDate(),
+				billing.getStatus(),
+				payment != null ? new PaymentDTO(payment.getId(), payment.getDate(), payment.getAmount()) : null
+			);
+		}).collect(Collectors.toList());
 	}
+
+	// public List<BillingByStudentDTO> getBillingByStudentId(UUID studentId) {
+	// 	return billingRepository.findByStudentId(studentId).stream()
+	// 		.map(billing -> {
+	// 			BillingByStudentDTO.PaymentDTO paymentDTO = null;
+	// 			if(billing.getPayments() != null) {
+	// 				paymentDTO = new BillingByStudentDTO.PaymentDTO(
+	// 					billing.getId(),
+	// 					billing.getDueDate(),
+	// 					billing.getAmount()
+	// 				);
+	// 			}
+	// 			return new BillingByStudentDTO(
+	// 				billing.getId(),
+	// 				billing.getAmount(),
+	// 				billing.getDueDate(),
+	// 				billing.getStatus(),
+	// 				paymentDTO
+	// 			);
+	// 		}).collect(Collectors.toList());
+	// }
 
 	public Billing saveBilling(Billing billing) {
 		return billingRepository.save(billing);

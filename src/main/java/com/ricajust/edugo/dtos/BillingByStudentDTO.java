@@ -21,7 +21,7 @@ public class BillingByStudentDTO {
 	@AllArgsConstructor
 	public static class PaymentDTO {
 		private Long id;
-		private Date dueDate;
+		private Date date;
 		private Double amount;
 	}
 }
