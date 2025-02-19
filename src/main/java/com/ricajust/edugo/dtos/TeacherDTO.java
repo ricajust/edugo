@@ -16,5 +16,6 @@ public class TeacherDTO {
 	private String name;
 	private String email;
 	private Date hiringDate;
+	private String specialization;
 	private List<Long> disciplineIds;
 }

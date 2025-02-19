@@ -29,6 +29,7 @@ public class TeacherService {
 			teacher.getName(),
 			teacher.getEmail(),
 			teacher.getHiringDate(),
+			teacher.getSpecialization(),
 			teacher.getDisciplines().stream().map(Discipline::getId).toList()
 		)).toList();
 	}
@@ -39,6 +40,7 @@ public class TeacherService {
 			teacher.getName(),
 			teacher.getEmail(),
 			teacher.getHiringDate(),
+			teacher.getSpecialization(),
 			teacher.getDisciplines().stream().map(Discipline::getId).toList()
 		));
 	}
