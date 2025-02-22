@@ -21,20 +21,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Student extends User {
-	private Date enrollmentDate;
-	@ElementCollection
-	private List<Integer> absences;
+    private Date enrollmentDate;
+    @ElementCollection
+    private List<Integer> absences;
 
-	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<StudentDiscipline> studentDisciplines = new ArrayList<>();
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudentDiscipline> studentDisciplines = new ArrayList<>();
 
-	// @JsonIgnore // Ignora esta propriedade durante a serialização
-	// private List<Discipline> disciplines = new ArrayList<>();
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // Ignorar a lista de grades na serialização
+    private List<Grade> grades = new ArrayList<>();
 
-	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnore // Ignorar a lista de grades na serialização
-	private List<Grade> grades = new ArrayList<>();
-
-	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Billing> billings = new ArrayList<>();
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Billing> billings = new ArrayList<>();
 }

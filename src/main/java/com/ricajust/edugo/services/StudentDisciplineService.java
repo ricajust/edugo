@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +21,7 @@ public class StudentDisciplineService {
     @Autowired
     private final StudentDisciplineRepository studentDisciplineRepository;
 
-    // public List<StudentDiscipline> getStudentDisciplines(UUID studentId) {
-    //     return studentDisciplineRepository.findByStudentId(studentId);
-    // }
+    private static final Logger logger = Logger.getLogger(StudentDisciplineService.class.getName());
 
     public List<StudentDisciplineDTO> getStudentDisciplines(UUID studentId) {
         List<StudentDiscipline> studentDisciplines = studentDisciplineRepository.findByStudentId(studentId);
@@ -32,6 +31,8 @@ public class StudentDisciplineService {
     }
 
     public StudentDiscipline addAbsences(UUID studentId, Long disciplineId, int absences) {
+        logger.info("Adding absences for studentId: " + studentId + ", disciplineId: " + disciplineId + ", absences: " + absences);
+
         StudentDiscipline studentDiscipline = studentDisciplineRepository
                 .findByStudentIdAndDisciplineId(studentId, disciplineId)
                 .orElseThrow(() -> new IllegalArgumentException("Relationship not found"));

@@ -24,49 +24,43 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DisciplineController {
 
-	@Autowired
-	private final DisciplineService disciplineService;
+    @Autowired
+    private final DisciplineService disciplineService;
 
-	@GetMapping
-	public ResponseEntity<List<DisciplineDTO>> getAllDisciplines() {
-		List<DisciplineDTO> disciplines = disciplineService.getAllDisciplines();
-		return ResponseEntity.ok(disciplines);
-	}
+    @GetMapping
+    public ResponseEntity<List<DisciplineDTO>> getAllDisciplines() {
+        List<DisciplineDTO> disciplines = disciplineService.getAllDisciplines();
+        return ResponseEntity.ok(disciplines);
+    }
 
-	// @GetMapping()
-	// public ResponseEntity<List<DisciplineDTO>> getAllDisciplineById(List<Long> ids) {
-	// 	List<DisciplineDTO> disciplines = disciplineService.getAllDisciplinesById(ids);
-	// 	return ResponseEntity.ok(disciplines);
-	// }
+    @GetMapping("/{id}")
+    public ResponseEntity<DisciplineDTO> getDisciplineById(@PathVariable Long id) {
+        return disciplineService.getDisciplineById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-	@GetMapping("/{id}")
-	public ResponseEntity<DisciplineDTO> getDisciplineById(@PathVariable Long id) {
-		return disciplineService.getDisciplineById(id)
-				.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
-	}
+    @PostMapping
+    public ResponseEntity<DisciplineDTO> createDiscipline(@RequestBody DisciplineDTO disciplineDTO) {
+        DisciplineDTO savedDiscipline = disciplineService.createDiscipline(disciplineDTO);
+        return ResponseEntity.status(201).body(savedDiscipline);
+    }
 
-	@PostMapping
-	public ResponseEntity<Discipline> createDiscipline(@RequestBody Discipline discipline) {
-		Discipline savedDiscipline = disciplineService.saveDiscipline(discipline);
-		return ResponseEntity.status(201).body(savedDiscipline);
-	}
+    @PutMapping("/{id}")
+    public ResponseEntity<Discipline> updateDiscipline(@PathVariable Long id, @RequestBody Discipline updatedDiscipline) {
+        return disciplineService.getDisciplineById(id).map(existingDiscipline -> {
+            updatedDiscipline.setId(existingDiscipline.getId());
+            Discipline savedDiscipline = disciplineService.saveDiscipline(updatedDiscipline);
+            return ResponseEntity.ok(savedDiscipline);
+        }).orElse(ResponseEntity.notFound().build());
+    }
 
-	@PutMapping("/{id}")
-	public ResponseEntity<Discipline> updateDiscipline(@PathVariable Long id, @RequestBody Discipline updatedDiscipline) {
-		return disciplineService.getDisciplineById(id).map(existingDiscipline -> {
-			updatedDiscipline.setId(existingDiscipline.getId());
-			Discipline savedDiscipline = disciplineService.saveDiscipline(updatedDiscipline);
-			return ResponseEntity.ok(savedDiscipline);
-		}).orElse(ResponseEntity.notFound().build());
-	}
-
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteDiscipline(@PathVariable Long id) {
-		if (disciplineService.getDisciplineById(id).isPresent()) {
-			disciplineService.deleteDisciplineById(id);
-			return ResponseEntity.noContent().build();
-		}
-		return ResponseEntity.notFound().build();
-	}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDiscipline(@PathVariable Long id) {
+        if (disciplineService.getDisciplineById(id).isPresent()) {
+            disciplineService.deleteDisciplineById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

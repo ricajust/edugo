@@ -1,5 +1,6 @@
 package com.ricajust.edugo.controllers;
 
+import com.ricajust.edugo.dtos.AddAbsencesRequestDTO;
 import com.ricajust.edugo.dtos.StudentDisciplineDTO;
 import com.ricajust.edugo.models.StudentDiscipline;
 import com.ricajust.edugo.services.StudentDisciplineService;
@@ -22,11 +23,8 @@ public class StudentDisciplineController {
         return ResponseEntity.ok(studentDisciplineService.getStudentDisciplines(studentId));
     }
 
-    @PostMapping("/{studentId}/{disciplineId}/absences")
-    public ResponseEntity<StudentDiscipline> addAbsences(
-            @PathVariable UUID studentId,
-            @PathVariable Long disciplineId,
-            @RequestParam int absences) {
-        return ResponseEntity.ok(studentDisciplineService.addAbsences(studentId, disciplineId, absences));
+    @PostMapping("/absences")
+    public ResponseEntity<StudentDiscipline> addAbsences(@RequestBody AddAbsencesRequestDTO request) {
+        return ResponseEntity.ok(studentDisciplineService.addAbsences(request.getStudentId(), request.getDisciplineId(), request.getAbsences()));
     }
 }

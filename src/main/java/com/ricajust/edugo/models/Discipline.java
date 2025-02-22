@@ -24,21 +24,18 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Discipline {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String name;
-	private String description;
-	private Double price;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String description;
+    private Double price;
 
-	@ManyToOne
-	@JoinColumn(name = "teacher_id")
-	private Teacher teacher;
+    @ManyToOne
+    @JoinColumn(name = "teacher_id")
+    private Teacher teacher;
 
-	// @ManyToMany(mappedBy = "disciplines")
-	// private List<Student> students = new ArrayList<>();
-
-	@OneToMany(mappedBy = "discipline", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnore // Evita serializar `StudentDiscipline` recursivamente
-	private List<StudentDiscipline> studentDisciplines = new ArrayList<>();
+    @OneToMany(mappedBy = "discipline", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // Evita serializar `StudentDiscipline` recursivamente
+    private List<StudentDiscipline> studentDisciplines = new ArrayList<>();
 }

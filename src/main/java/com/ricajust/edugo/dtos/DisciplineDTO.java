@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DisciplineDTO {
-	private Long id;
-	private String name;
-	private String description;
-	private Double price;
-	private UUID teacherId;
-	private List<UUID> studentIds;
+    private Long id;
+    private String name;
+    private String description;
+    private Double price;
+    private UUID teacherId;
+    private List<UUID> studentIds;
 }
